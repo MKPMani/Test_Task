@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "kafka-ui": "StartWithoutDebugging",
+        "kafka": "StartWithoutDebugging",
+        "ordering.api": "StartWithoutDebugging",
+        "user.api": "StartWithoutDebugging",
+        "zookeeper": "StartWithoutDebugging"
+      }
+    }
+  }
+}
