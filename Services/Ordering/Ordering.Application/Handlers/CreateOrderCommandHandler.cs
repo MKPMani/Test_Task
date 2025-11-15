@@ -36,6 +36,7 @@ namespace Ordering.Application.Handlers
 
             var generatedOrder = await _orderRepository.CreateOrder(order);
             _logger.LogInformation($"Order with Id {generatedOrder.Id} successfully created");
+
             var orderResponse = OrderMapper.Mapper.Map<OrderResponse>(generatedOrder);
             orderResponse.Message = "Order created & event published";
             return orderResponse;

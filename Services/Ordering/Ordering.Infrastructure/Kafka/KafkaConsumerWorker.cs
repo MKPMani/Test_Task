@@ -18,7 +18,7 @@ public class KafkaConsumerWorker : BackgroundService
         var consumerConfig = new ConsumerConfig
         {
             BootstrapServers = _config["Kafka:BootstrapServers"],
-            GroupId = "user-service",
+            GroupId = "order-service-grp",
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
 
