@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using Ordering.Application.Extensions;
 using Ordering.Application.Handlers;
 using Ordering.Infrastructure.ServiceRegistration;
 using System.Reflection;

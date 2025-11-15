@@ -29,16 +29,6 @@ namespace User.Application.Handlers
             // Publish UserCreated event
             await _kafka.PublishAsync("user-created", user);
 
-            /*
-            return new UserCreatedResponse
-            {
-                Id = user.Id.ToString(),
-                Name = user.Name,
-                Email = user.Email,
-                Message = "User created & event published"
-            };*/
-
-            
             var newUser = await _userRepository.CreateUser(user);
             var userResponse = UserMapper.Mapper.Map<UserCreatedResponse>(newUser);
             userResponse.Message = "User created & event published";

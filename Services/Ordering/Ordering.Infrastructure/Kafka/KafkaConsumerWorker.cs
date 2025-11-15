@@ -3,12 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
 
-namespace User.Infrastructure.Kafka;
+namespace Ordering.Infrastructure.Kafka;
 
 public class KafkaConsumerWorker : BackgroundService
 {
     private readonly IConfiguration _config;
-
     public KafkaConsumerWorker(IConfiguration config)
     {
         _config = config;
@@ -19,12 +18,12 @@ public class KafkaConsumerWorker : BackgroundService
         var consumerConfig = new ConsumerConfig
         {
             BootstrapServers = _config["Kafka:BootstrapServers"],
-            GroupId = "order-service",
+            GroupId = "user-service",
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
 
         var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
-        consumer.Subscribe("order-created");
+        consumer.Subscribe("user-created");
 
         return Task.Run(() =>
         {
@@ -33,9 +32,8 @@ public class KafkaConsumerWorker : BackgroundService
                 var result = consumer.Consume(stoppingToken);
 
                 var payload = JsonSerializer.Deserialize<object>(result.Message.Value);
-                Console.WriteLine($"Order created event consumed: {result.Message.Value}");
+                Console.WriteLine($"User created event consumed: {result.Message.Value}");
             }
         }, stoppingToken);
     }
 }
-

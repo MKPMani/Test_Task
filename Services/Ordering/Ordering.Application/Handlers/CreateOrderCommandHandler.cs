@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Commands;
+using Ordering.Application.Interfaces;
 using Ordering.Application.Mappers;
 using Ordering.Application.Responses;
 using Ordering.Core.Entities;
@@ -12,26 +13,31 @@ namespace Ordering.Application.Handlers
     public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, OrderResponse>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IMapper _mapper;
         private readonly ILogger<CreateOrderCommandHandler> _logger;
+        private readonly IKafkaProducer _kafka;
 
-        public CreateOrderCommandHandler(IOrderRepository orderRepository, IMapper mapper, ILogger<CreateOrderCommandHandler> logger)
+        public CreateOrderCommandHandler(IOrderRepository orderRepository, ILogger<CreateOrderCommandHandler> logger,
+            IKafkaProducer kafka)
         {
             _orderRepository = orderRepository;
-            _mapper = mapper;
             _logger = logger;
+            _kafka = kafka;
         }
         public async Task<OrderResponse> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var orderEntity = OrderMapper.Mapper.Map<Order>(request);
-            if (orderEntity is null)
+            var order = OrderMapper.Mapper.Map<Order>(request);
+            if (order is null)
             {
                 throw new ApplicationException("There is an issue with mapping while creating new order");
             }
 
-            var generatedOrder = await _orderRepository.CreateOrder(orderEntity);
+            // Publish UserCreated event
+            await _kafka.PublishAsync("order-created", order);
+
+            var generatedOrder = await _orderRepository.CreateOrder(order);
             _logger.LogInformation($"Order with Id {generatedOrder.Id} successfully created");
             var orderResponse = OrderMapper.Mapper.Map<OrderResponse>(generatedOrder);
+            orderResponse.Message = "Order created & event published";
             return orderResponse;
         }
     }

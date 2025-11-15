@@ -13,14 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure();
 
-builder.Services.AddSingleton(_ =>
-{
-    return new ProducerConfig
-    {
-        BootstrapServers = "kafka:9092"
-    };
-});
-
 builder.Services.AddControllers();
 // Add API Versioning
 builder.Services.AddApiVersioning(options =>
