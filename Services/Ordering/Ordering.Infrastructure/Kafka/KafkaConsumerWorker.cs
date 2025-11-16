@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace Ordering.Infrastructure.Kafka;
 
-public class KafkaConsumerWorker : BackgroundService
+public class KafkaConsumerWorker //: BackgroundService
 {
     private readonly IConfiguration _config;
     public KafkaConsumerWorker(IConfiguration config)
@@ -13,6 +13,7 @@ public class KafkaConsumerWorker : BackgroundService
         _config = config;
     }
 
+    /*
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var consumerConfig = new ConsumerConfig
@@ -36,4 +37,5 @@ public class KafkaConsumerWorker : BackgroundService
             }
         }, stoppingToken);
     }
+    */
 }
