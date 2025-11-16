@@ -23,7 +23,6 @@ namespace Ordering.Infrastructure.ServiceRegistration
             services.AddSingleton<IKafkaMessageHandler, KafkaMessageHandler>();
             services.AddHostedService<KafkaConsumerWorker>();
 
-
             return services;
         }
     }

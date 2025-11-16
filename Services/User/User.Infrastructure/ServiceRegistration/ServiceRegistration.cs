@@ -21,7 +21,7 @@ namespace User.Infrastructure.ServiceRegistration
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddSingleton<IKafkaProducer, KafkaProducer>();
             services.AddSingleton<IKafkaMessageHandler, KafkaMessageHandler>();
-            services.AddHostedService<KafkaConsumerWorker>();            
+            //services.AddHostedService<KafkaConsumerWorker>();            
 
             return services;
         }

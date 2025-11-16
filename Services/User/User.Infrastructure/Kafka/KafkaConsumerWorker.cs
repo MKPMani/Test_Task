@@ -6,7 +6,7 @@ using User.Application.Interfaces;
 
 namespace User.Infrastructure.Kafka;
 
-public class KafkaConsumerWorker : BackgroundService
+public class KafkaConsumerWorker //: BackgroundService
 {
     private readonly ConsumerConfig _config;
     private readonly IServiceProvider _services;
@@ -25,6 +25,7 @@ public class KafkaConsumerWorker : BackgroundService
         _topic = "order-created";
     }
     
+    /*
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var consumer = new ConsumerBuilder<string, string>(_config).Build();
@@ -51,7 +52,8 @@ public class KafkaConsumerWorker : BackgroundService
                 Console.WriteLine($"[KafkaError] {ex.Message}");
             }
         }
-        consumer.Close();        
+        consumer.Close();
     }
+    */
 }
 
