@@ -1,47 +1,57 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using User.Application.Handlers;
+using User.Application.Interfaces;
 
 namespace User.Infrastructure.Kafka;
 
 public class KafkaConsumerWorker : BackgroundService
 {
-    private readonly IConfiguration _config;
-    private readonly ILogger<KafkaConsumerWorker> _logger;
-
-    public KafkaConsumerWorker(IConfiguration config, ILogger<KafkaConsumerWorker> logger)
+    private readonly ConsumerConfig _config;
+    private readonly IServiceProvider _services;
+    private readonly string _topic;
+    public KafkaConsumerWorker(IServiceProvider services, IConfiguration cfg)
     {
-        _config = config;
-        _logger = logger;
+        _services = services;
+
+        _config = new ConsumerConfig
+        {
+            BootstrapServers = cfg["Kafka:BootstrapServers"],
+            GroupId = "user-service-grp",
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            EnableAutoCommit = true
+        };
+        _topic = "order-created";
     }
     
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var consumerConfig = new ConsumerConfig
-        {
-            BootstrapServers = _config["Kafka:BootstrapServers"],
-            GroupId = "user-service-grp",
-            AutoOffsetReset = AutoOffsetReset.Earliest
-        };
+        using var consumer = new ConsumerBuilder<string, string>(_config).Build();
+        consumer.Subscribe(_topic);
 
-        var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
-        consumer.Subscribe("order-created");
-
-        return Task.Run(() =>
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
                 var result = consumer.Consume(stoppingToken);
+                if (result?.Message == null) continue;
 
-                var payload = JsonSerializer.Deserialize<object>(result.Message.Value);
-                Console.WriteLine($"Order created event consumed: {result.Message.Value}");
-                _logger.LogInformation($"Order message {payload} successfully received");
+                using var scope = _services.CreateScope();
+                var handler = scope.ServiceProvider.GetRequiredService<IKafkaMessageHandler>();
+
+                await handler.HandleAsync(result.Topic, result.Message.Value, stoppingToken);
             }
-        }, stoppingToken);
+            catch (OperationCanceledException)
+            {
+                break; // graceful shutdown
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[KafkaError] {ex.Message}");
+            }
+        }
+        consumer.Close();        
     }
 }
 

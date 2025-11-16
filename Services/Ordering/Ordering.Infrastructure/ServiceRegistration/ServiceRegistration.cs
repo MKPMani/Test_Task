@@ -5,6 +5,7 @@ using Ordering.Core.Repositories;
 using Ordering.Infrastructure.Repository;
 using Ordering.Application.Interfaces;
 using Ordering.Infrastructure.Kafka;
+using Ordering.Application.Kafka;
 
 namespace Ordering.Infrastructure.ServiceRegistration
 {
@@ -19,6 +20,7 @@ namespace Ordering.Infrastructure.ServiceRegistration
             // Register repository
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddSingleton<IKafkaProducer, KafkaProducer>();
+            services.AddSingleton<IKafkaMessageHandler, KafkaMessageHandler>();
             services.AddHostedService<KafkaConsumerWorker>();
 
 

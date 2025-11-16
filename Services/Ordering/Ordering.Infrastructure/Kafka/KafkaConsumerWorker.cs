@@ -1,39 +1,57 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Ordering.Application.Interfaces;
 using System.Text.Json;
 
 namespace Ordering.Infrastructure.Kafka;
 
 public class KafkaConsumerWorker : BackgroundService
 {
-    private readonly IConfiguration _config;
-    public KafkaConsumerWorker(IConfiguration config)
+    private readonly ConsumerConfig _config;
+    private readonly IServiceProvider _services;
+    private readonly string _topic;
+    public KafkaConsumerWorker(IServiceProvider services, IConfiguration cfg)
     {
-        _config = config;
+        _services = services;
+
+        _config = new ConsumerConfig
+        {
+            BootstrapServers = cfg["Kafka:BootstrapServers"],
+            GroupId = "order-service-grp",
+            AutoOffsetReset = AutoOffsetReset.Earliest,
+            EnableAutoCommit = true
+        };
+        _topic = "user-created";
     }
         
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var consumerConfig = new ConsumerConfig
-        {
-            BootstrapServers = _config["Kafka:BootstrapServers"],
-            GroupId = "order-service-grp",
-            AutoOffsetReset = AutoOffsetReset.Earliest
-        };
+        using var consumer = new ConsumerBuilder<string, string>(_config).Build();
+        consumer.Subscribe(_topic);
 
-        var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
-        consumer.Subscribe("user-created");
-
-        return Task.Run(() =>
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
                 var result = consumer.Consume(stoppingToken);
+                if (result?.Message == null) continue;
 
-                var payload = JsonSerializer.Deserialize<object>(result.Message.Value);
-                Console.WriteLine($"User created event consumed: {result.Message.Value}");
+                using var scope = _services.CreateScope();
+                var handler = scope.ServiceProvider.GetRequiredService<IKafkaMessageHandler>();
+
+                await handler.HandleAsync(result.Topic, result.Message.Value, stoppingToken);
             }
-        }, stoppingToken);
+            catch (OperationCanceledException)
+            {
+                break; // graceful shutdown
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[KafkaError] {ex.Message}");
+            }
+        }
+        consumer.Close();
     }
 }
