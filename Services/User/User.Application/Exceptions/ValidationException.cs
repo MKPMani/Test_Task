@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace Ordering.Application.Exceptions;
+namespace User.Application.Exceptions;
 
 public class ValidationException : ApplicationException
 {

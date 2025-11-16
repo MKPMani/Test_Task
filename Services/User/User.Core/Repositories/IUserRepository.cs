@@ -4,7 +4,7 @@ namespace User.Core.Repositories
 {
     public interface IUserRepository
     {
-        Task<Users> GetUser(string id);        
+        Task<Users> GetUser(Guid id);        
         Task<Users> CreateUser(Users product);       
     }
 }

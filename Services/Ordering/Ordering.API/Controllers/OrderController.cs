@@ -20,7 +20,7 @@ namespace Ordering.API.Controllers
 
         [HttpGet]
         [Route("[action]/{id}", Name = "GetOrderById")]
-        public async Task<ActionResult<OrderResponse>> GetOrderById(string id)
+        public async Task<ActionResult<OrderResponse>> GetOrderById(Guid id)
         {
             var query = new GetOrderByIdQuery(id);
             var result = await _mediator.Send(query);
@@ -29,7 +29,7 @@ namespace Ordering.API.Controllers
 
         [HttpPost]
         [Route("CreateOrder")]
-        public async Task<ActionResult<OrderResponse>> CreateOrder([FromBody] CreateOrderCommand command)
+        public async Task<ActionResult<Guid>> CreateOrder([FromBody] CreateOrderCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(result);

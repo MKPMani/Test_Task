@@ -19,7 +19,7 @@ namespace User.Infrastructure.ServiceRegistration
             // Register repository
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddSingleton<IKafkaProducer, KafkaProducer>();
-            services.AddHostedService<KafkaConsumerWorker>();
+            //services.AddHostedService<KafkaConsumerWorker>();
 
             return services;
         }

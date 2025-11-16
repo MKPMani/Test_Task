@@ -5,8 +5,8 @@ namespace User.Application.Queries
 {
     public class GetUserByIdQuery : IRequest<UserCreatedResponse>
     {
-        public string Id { get; set; }
-        public GetUserByIdQuery(string id)
+        public Guid Id { get; set; }
+        public GetUserByIdQuery(Guid id)
         {
             Id = id;
         }

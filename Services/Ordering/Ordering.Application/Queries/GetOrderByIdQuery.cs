@@ -5,8 +5,8 @@ namespace Ordering.Application.Queries
 {
     public class GetOrderByIdQuery : IRequest<OrderResponse>
     {
-        public string Id { get; set; }
-        public GetOrderByIdQuery(string id)
+        public Guid Id { get; set; }
+        public GetOrderByIdQuery(Guid id)
         {
             Id = id;
         }

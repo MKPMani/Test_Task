@@ -13,9 +13,9 @@ namespace Ordering.Infrastructure.Repository
             _context = context;
         }
 
-        async Task<Order> IOrderRepository.GetOrder(string id)
+        async Task<Order> IOrderRepository.GetOrder(Guid id)
         {
-            var res = await _context.Orders.Where(e => e.Id.ToString() == id).FirstOrDefaultAsync();
+            var res = await _context.Orders.Where(e => e.Id == id).FirstOrDefaultAsync();
             return res ?? new Order();
         }
 

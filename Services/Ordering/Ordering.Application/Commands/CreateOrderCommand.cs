@@ -3,7 +3,7 @@ using Ordering.Application.Responses;
 
 namespace Ordering.Application.Commands
 {
-    public class CreateOrderCommand : IRequest<OrderResponse>
+    public class CreateOrderCommand : IRequest<Guid>
     {
         public string UserId { get; set; } = string.Empty;
         public string Product { get; set; } = string.Empty;

@@ -19,7 +19,7 @@ namespace Ordering.Infrastructure.ServiceRegistration
             // Register repository
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddSingleton<IKafkaProducer, KafkaProducer>();
-            services.AddHostedService<KafkaConsumerWorker>();
+            //services.AddHostedService<KafkaConsumerWorker>();
 
 
             return services;

@@ -14,9 +14,9 @@ namespace User.Infrastructure.Repository
             _context = context;
         }
 
-        async Task<Users> IUserRepository.GetUser(string id)
+        async Task<Users> IUserRepository.GetUser(Guid id)
         {
-            var res = await _context.Users.Where(e=> e.Id.ToString() == id).FirstOrDefaultAsync();
+            var res = await _context.Users.Where(e=> e.Id == id).FirstOrDefaultAsync();
             return res ?? new Users();
         }
 

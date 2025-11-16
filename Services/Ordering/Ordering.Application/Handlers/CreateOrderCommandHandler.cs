@@ -7,10 +7,11 @@ using Ordering.Application.Mappers;
 using Ordering.Application.Responses;
 using Ordering.Core.Entities;
 using Ordering.Core.Repositories;
+using static System.Net.WebRequestMethods;
 
 namespace Ordering.Application.Handlers
 {
-    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, OrderResponse>
+    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ILogger<CreateOrderCommandHandler> _logger;
@@ -23,7 +24,7 @@ namespace Ordering.Application.Handlers
             _logger = logger;
             _kafka = kafka;
         }
-        public async Task<OrderResponse> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             var order = OrderMapper.Mapper.Map<Order>(request);
             if (order is null)
@@ -31,15 +32,16 @@ namespace Ordering.Application.Handlers
                 throw new ApplicationException("There is an issue with mapping while creating new order");
             }
 
-            // Publish UserCreated event
-            await _kafka.PublishAsync("order-created", order);
-
             var generatedOrder = await _orderRepository.CreateOrder(order);
             _logger.LogInformation($"Order with Id {generatedOrder.Id} successfully created");
 
+            // Publish UserCreated event
+            await _kafka.PublishAsync("order-created", order);
+            _logger.LogInformation($"Order created & event published for Order Id - {generatedOrder.Id}");
+
             var orderResponse = OrderMapper.Mapper.Map<OrderResponse>(generatedOrder);
-            orderResponse.Message = "Order created & event published";
-            return orderResponse;
+            
+            return orderResponse.Id;
         }
     }
 }

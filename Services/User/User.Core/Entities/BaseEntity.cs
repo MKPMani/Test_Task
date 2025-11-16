@@ -10,6 +10,6 @@ namespace User.Core.Entities
 {
     public class BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
     }
 }

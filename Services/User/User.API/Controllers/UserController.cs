@@ -18,7 +18,7 @@ namespace User.API.Controllers
 
         [HttpGet]
         [Route("[action]/{id}", Name = "GetUserById")]        
-        public async Task<ActionResult<UserCreatedResponse>> GetUserById(string id)
+        public async Task<ActionResult<UserCreatedResponse>> GetUserById(Guid id)
         {
             var query = new GetUserByIdQuery(id);
             var result = await _mediator.Send(query);
@@ -27,7 +27,7 @@ namespace User.API.Controllers
 
         [HttpPost]
         [Route("CreateUser")]
-        public async Task<ActionResult<UserCreatedResponse>> CreateUser([FromBody] CreateUserCommand userCommand)
+        public async Task<ActionResult<Guid>> CreateUser([FromBody] CreateUserCommand userCommand)
         {
             var result = await _mediator.Send(userCommand);
             return Ok(result);
