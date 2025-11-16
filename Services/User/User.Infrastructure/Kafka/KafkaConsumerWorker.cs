@@ -8,7 +8,7 @@ using User.Application.Handlers;
 
 namespace User.Infrastructure.Kafka;
 
-public class KafkaConsumerWorker //: BackgroundService
+public class KafkaConsumerWorker : BackgroundService
 {
     private readonly IConfiguration _config;
     private readonly ILogger<KafkaConsumerWorker> _logger;
@@ -18,8 +18,7 @@ public class KafkaConsumerWorker //: BackgroundService
         _config = config;
         _logger = logger;
     }
-
-    /*
+    
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var consumerConfig = new ConsumerConfig
@@ -43,6 +42,6 @@ public class KafkaConsumerWorker //: BackgroundService
                 _logger.LogInformation($"Order message {payload} successfully received");
             }
         }, stoppingToken);
-    }*/
+    }
 }
 
