@@ -16,10 +16,7 @@ public class OrderControllerTest
 {
     private readonly Mock<IMediator> _mediatorMock;
 
-    public OrderControllerTest()
-    {
-        _mediatorMock = new();
-    }
+    public OrderControllerTest() => _mediatorMock = new();
 
     [Fact]
     public async Task Controller_CreateOrder_Should_ReturnSuccessResult_WhenOrderObjectIsValid()
@@ -38,7 +35,7 @@ public class OrderControllerTest
         var result = await controller.CreateOrder(command);
 
         //Assert
-        Assert.NotEqual(Guid.Empty, result);        
+        Assert.NotEqual(Guid.Empty, result);
     }
 
 
@@ -52,6 +49,6 @@ public class OrderControllerTest
         var result = await controller.GetOrderById(Guid.NewGuid());
 
         // Assert
-        Assert.Equal(200, Assert.IsType<OkObjectResult>(result.Result).StatusCode); 
+        Assert.Equal(200, Assert.IsType<OkObjectResult>(result.Result).StatusCode);
     }
 }
