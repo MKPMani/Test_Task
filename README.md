@@ -46,3 +46,4 @@ few error code search on chatgpt
 * more test case scenario for all the interfaces
 * more logging
 * common project for kafka consumer
+** known issues yet to fix and code commented - background consumer service for - (order-created)
