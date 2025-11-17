@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Ordering.Application.Extensions;
+using Ordering.Application.Middleware;
 using Ordering.Infrastructure.ServiceRegistration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +34,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseSwaggerUI(c =>
 {

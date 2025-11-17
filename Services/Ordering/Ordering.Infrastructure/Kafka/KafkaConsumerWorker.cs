@@ -21,7 +21,7 @@ public class KafkaConsumerWorker : BackgroundService
             BootstrapServers = cfg["Kafka:BootstrapServers"],
             GroupId = "order-service-grp",
             AutoOffsetReset = AutoOffsetReset.Earliest,
-            EnableAutoCommit = true
+            EnableAutoCommit = false
         };
         _topic = "user-created";
     }

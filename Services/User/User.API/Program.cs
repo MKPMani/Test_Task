@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using User.Application.Extensions;
+using User.Application.Middleware;
 using User.Infrastructure.ServiceRegistration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseSwaggerUI(c =>
 {
